@@ -1,19 +1,25 @@
-import { Button } from "@/components/ui/button"
+import { SectionNavbar } from "@/components/section-navbar"
+import { SectionHero } from "@/components/section-hero"
+import { SectionFeatures } from "@/components/section-features"
+import { SectionDownload } from "@/components/section-download"
+import { SectionCommunity } from "@/components/section-community"
+import { SectionReviews } from "@/components/section-reviews"
+import { SectionDeveloper } from "@/components/section-developer"
+import { SectionFooter } from "@/components/section-footer"
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
+    <>
+      <SectionNavbar />
+      <main>
+        <SectionHero />
+        <SectionFeatures />
+        <SectionDownload />
+        <SectionCommunity />
+        <SectionReviews />
+        <SectionDeveloper />
+      </main>
+      <SectionFooter />
+    </>
   )
 }
