@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
@@ -8,8 +8,10 @@ import { cn } from "@/lib/utils"
 
 const navLinks = [
   { href: "#features", label: "Features" },
+  { href: "#docker", label: "Docker" },
   { href: "#download", label: "Download" },
   { href: "#community", label: "Community" },
+  { href: "#reviews", label: "Reviews" },
 ]
 
 function GitHubIcon({ className }: { className?: string }) {
@@ -27,114 +29,162 @@ function GitHubIcon({ className }: { className?: string }) {
 
 export function SectionNavbar() {
   const [open, setOpen] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const [activeSection, setActiveSection] = useState("")
   const { theme, setTheme, resolvedTheme } = useTheme()
 
+  useEffect(() => {
+    const onScroll = () => {
+      const scrollTop = window.scrollY
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      setScrollProgress(docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0)
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  useEffect(() => {
+    const sectionIds = navLinks.map((l) => l.href.slice(1))
+    const observers: IntersectionObserver[] = []
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id)
+      if (!el) return
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setActiveSection(id)
+        },
+        { rootMargin: "-40% 0px -55% 0px" },
+      )
+      observer.observe(el)
+      observers.push(observer)
+    })
+
+    return () => observers.forEach((o) => o.disconnect())
+  }, [])
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-border/50 bg-background/60 backdrop-blur-xl shadow-sm">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <a href="#" className="flex items-center gap-2">
-          <img src="/logo.png" alt="NeoArch" className="h-8 w-auto" />
-          <span className="text-xl font-bold tracking-tight text-primary">
-            NeoArch
-          </span>
-        </a>
+    <>
+      <div
+        className="fixed top-0 left-0 z-[60] h-0.5 bg-primary transition-all duration-150"
+        style={{ width: `${scrollProgress * 100}%` }}
+      />
 
-        <nav className="hidden items-center gap-6 md:flex">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" asChild>
-            <a
-              href="https://github.com/Sanjaya-Danushka/Neoarch"
-              target="_blank"
-              rel="noopener noreferrer"
-                    aria-label="GitHub"
-                  >
-                    <GitHubIcon className="h-5 w-5" />
-            </a>
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-            aria-label="Toggle theme"
-          >
-            <span className={cn(
-              "inline-block transition-transform duration-300",
-              resolvedTheme === "dark" ? "rotate-0" : "rotate-90",
-            )}>
-              {resolvedTheme === "dark" ? (
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-              )}
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-border/50 bg-background/60 backdrop-blur-xl shadow-sm">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+          <a href="#" className="flex items-center gap-2">
+            <img src="/logo.png" alt="NeoArch" className="h-8 w-auto" />
+            <span className="text-xl font-bold tracking-tight text-primary">
+              NeoArch
             </span>
-          </Button>
+          </a>
 
-          <Button
-            variant="default"
-            size="sm"
-            className="hidden md:inline-flex"
-            asChild
-          >
-            <a
-              href="https://github.com/Sanjaya-Danushka/Neoarch"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <GitHubIcon className="mr-2 h-4 w-4" />
-              GitHub
-            </a>
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setOpen(!open)}
-            aria-label="Menu"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
-        </div>
-      </div>
-
-      {open && (
-        <div className="border-t border-border/50 md:hidden">
-          <nav className="flex flex-col gap-1 px-4 py-4">
+          <nav className="hidden items-center gap-1 md:flex">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                onClick={() => setOpen(false)}
-                className="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-sm transition-all duration-200",
+                  activeSection === link.href.slice(1)
+                    ? "bg-primary/10 text-primary font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+                )}
               >
                 {link.label}
               </a>
             ))}
-            <Button variant="default" size="sm" className="mt-2" asChild>
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" asChild>
               <a
                 href="https://github.com/Sanjaya-Danushka/Neoarch"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="GitHub"
               >
-                            <GitHubIcon className="mr-2 h-4 w-4" />
-                            View on GitHub
+                <GitHubIcon className="h-5 w-5" />
               </a>
             </Button>
-          </nav>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              aria-label="Toggle theme"
+            >
+              <span className={cn(
+                "inline-block transition-transform duration-500",
+                resolvedTheme === "dark" ? "rotate-0" : "rotate-90",
+              )}>
+                {resolvedTheme === "dark" ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setOpen(!open)}
+              aria-label="Menu"
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
         </div>
-      )}
-    </header>
+      </header>
+
+      <div
+        className={cn(
+          "fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 bg-background/95 backdrop-blur-2xl transition-all duration-500 md:hidden",
+          open
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0",
+        )}
+      >
+        {navLinks.map((link, i) => (
+          <a
+            key={link.href}
+            href={link.href}
+            onClick={() => setOpen(false)}
+            className="text-2xl font-medium transition-colors hover:text-primary"
+            style={{
+              transitionDelay: open ? `${i * 80}ms` : "0ms",
+              transition: `opacity 400ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1)`,
+              opacity: open ? 1 : 0,
+              transform: open ? "translateY(0)" : "translateY(20px)",
+            }}
+          >
+            {link.label}
+          </a>
+        ))}
+        <Button
+          variant="default"
+          size="lg"
+          className="mt-4"
+          style={{
+            transitionDelay: open ? `${navLinks.length * 80}ms` : "0ms",
+            transition: `opacity 400ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1)`,
+            opacity: open ? 1 : 0,
+            transform: open ? "translateY(0)" : "translateY(20px)",
+          }}
+          asChild
+        >
+          <a
+            href="https://github.com/Sanjaya-Danushka/Neoarch"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <GitHubIcon className="mr-2 h-4 w-4" />
+            View on GitHub
+          </a>
+        </Button>
+      </div>
+    </>
   )
 }

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { Reveal } from "@/components/reveal"
 
 const installCommands = [
   {
@@ -53,19 +54,21 @@ export function SectionDownload() {
   return (
     <section id="download" className="border-t border-border/50 py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="mx-auto mb-14 max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Get Started
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            Choose your preferred installation method.
-          </p>
-        </div>
+        <Reveal>
+          <div className="mx-auto mb-14 max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              Get Started
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Choose your preferred installation method.
+            </p>
+          </div>
+        </Reveal>
 
         <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
-          {installCommands.map((item) => (
+          {installCommands.map((item, i) => (
+            <Reveal key={item.label} delay={i * 120} from="up">
             <Card
-              key={item.label}
               className={
                 item.recommended
                   ? "relative overflow-visible border-primary/40 bg-card/60 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
@@ -96,11 +99,13 @@ export function SectionDownload() {
                 </div>
               </CardContent>
             </Card>
+            </Reveal>
           ))}
         </div>
 
         <Separator className="mx-auto my-14 max-w-md" />
 
+        <Reveal delay={200}>
         <div className="mx-auto max-w-lg">
           <h3 className="mb-6 text-center text-lg font-semibold">
             Requirements
@@ -121,9 +126,11 @@ export function SectionDownload() {
             ))}
           </div>
         </div>
+        </Reveal>
 
         <Separator className="mx-auto my-14 max-w-md" />
 
+        <Reveal delay={300}>
         <div className="mx-auto max-w-5xl">
           <div className="mb-8 text-center">
             <h3 className="inline-flex items-center gap-2 text-lg font-semibold">
@@ -190,6 +197,7 @@ export function SectionDownload() {
             ))}
           </div>
         </div>
+        </Reveal>
       </div>
     </section>
   )

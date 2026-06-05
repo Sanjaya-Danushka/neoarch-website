@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Reveal } from "@/components/reveal"
 
 interface Review {
   _id: string
@@ -79,8 +80,8 @@ export function SectionReviews() {
   useEffect(() => {
     fetch("/api/reviews")
       .then((r) => r.json())
-      .then(setReviews)
-      .catch(() => {})
+      .then((data) => setReviews(Array.isArray(data) ? data : []))
+      .catch(() => setReviews([]))
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -181,14 +182,16 @@ export function SectionReviews() {
   return (
     <section id="reviews" className="border-t border-border/50 py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="mx-auto mb-14 max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            What Users Say
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            Hear from the NeoArch community.
-          </p>
-        </div>
+        <Reveal>
+          <div className="mx-auto mb-14 max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              What Users Say
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Hear from the NeoArch community.
+            </p>
+          </div>
+        </Reveal>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_1.5fr]">
           <Card className="h-fit border-border/50 bg-card/60 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">

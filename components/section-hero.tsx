@@ -1,6 +1,7 @@
 "use client"
 
 import { ArrowRight } from "lucide-react"
+import { Reveal } from "@/components/reveal"
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -33,55 +34,65 @@ export function SectionHero() {
       </div>
 
       <div className="mx-auto flex max-w-6xl flex-col items-center px-4 pb-16 pt-12 text-center md:pb-24 md:pt-16">
-        <Badge variant="outline" className="glass mb-6 rounded-full px-4 py-1.5 text-xs shadow-sm">
-          v2.0.0-beta — Open Source
-        </Badge>
+        <Reveal delay={100}>
+          <Badge variant="outline" className="glass mb-6 rounded-full px-4 py-1.5 text-xs shadow-sm">
+            v2.0.0-beta — Open Source
+          </Badge>
+        </Reveal>
 
-        <h1 className="max-w-4xl text-balance text-4xl font-bold leading-tight tracking-tight md:text-6xl lg:text-7xl">
-          <span className="animate-shimmer bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-500 bg-clip-text text-transparent dark:from-blue-400 dark:via-cyan-300 dark:to-blue-500">
-            Modern Package Manager
-          </span>
-          <br />
-          <span className="text-primary">for Arch Linux</span>
-        </h1>
+        <Reveal delay={200}>
+          <h1 className="max-w-4xl text-balance text-4xl font-bold leading-tight tracking-tight md:text-6xl lg:text-7xl">
+            <span className="animate-shimmer bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-500 bg-clip-text text-transparent dark:from-blue-400 dark:via-cyan-300 dark:to-blue-500">
+              Modern Package Manager
+            </span>
+            <br />
+            <span className="text-primary">for Arch Linux</span>
+          </h1>
+        </Reveal>
 
-        <p className="mt-6 max-w-2xl text-balance text-base text-muted-foreground md:text-lg">
-          Manage packages from pacman, AUR, Flatpak, and npm — all in one
-          beautiful dark-themed interface. With built-in Git manager, Docker
-          manager, snapshot integration, and a powerful plugin system.
-        </p>
+        <Reveal delay={350}>
+          <p className="mt-6 max-w-2xl text-balance text-base text-muted-foreground md:text-lg">
+            Manage packages from pacman, AUR, Flatpak, and npm — all in one
+            beautiful dark-themed interface. With built-in Git manager, Docker
+            manager, snapshot integration, and a powerful plugin system.
+          </p>
+        </Reveal>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <Button size="lg" className="shadow-lg shadow-primary/20" asChild>
-            <a href="#download">
-              Get Started
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </a>
-          </Button>
-          <Button size="lg" variant="outline" className="glass" asChild>
-            <a
-              href="https://github.com/Sanjaya-Danushka/Neoarch"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <GitHubIcon className="mr-2 h-4 w-4" />
-              View on GitHub
-            </a>
-          </Button>
-        </div>
+        <Reveal delay={500}>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <Button size="lg" className="shadow-lg shadow-primary/20" asChild>
+              <a href="#download">
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+            <Button size="lg" variant="outline" className="glass" asChild>
+              <a
+                href="https://github.com/Sanjaya-Danushka/Neoarch"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <GitHubIcon className="mr-2 h-4 w-4" />
+                View on GitHub
+              </a>
+            </Button>
+          </div>
+        </Reveal>
 
-        <div className="group relative mt-16 w-full max-w-5xl">
-          <div className="absolute -inset-4 -z-10 rounded-2xl bg-gradient-to-r from-primary/20 via-primary/5 to-cyan-500/10 blur-3xl transition-all duration-700 group-hover:from-primary/30 group-hover:via-primary/10 group-hover:to-cyan-500/20" />
-          <div className="glass-strong glow relative rounded-xl p-1 shadow-2xl transition-all duration-500 group-hover:shadow-primary/10">
-            <div className="overflow-hidden rounded-lg">
-              <img
-                src="/home.png"
-                alt="NeoArch Dashboard Screenshot"
-                className="w-full transition-transform duration-700 group-hover:scale-[1.02]"
-              />
+        <Reveal delay={650}>
+          <div className="group relative mt-16 w-full max-w-5xl">
+            <div className="absolute -inset-4 -z-10 rounded-2xl bg-gradient-to-r from-primary/20 via-primary/5 to-cyan-500/10 blur-3xl transition-all duration-700 group-hover:from-primary/30 group-hover:via-primary/10 group-hover:to-cyan-500/20" />
+            <div className="glass-strong glow relative rounded-xl p-1 shadow-2xl transition-all duration-500 group-hover:shadow-primary/10">
+              <div className="overflow-hidden rounded-lg">
+                <img
+                  src="/home.png"
+                  alt="NeoArch Dashboard Screenshot"
+                  className="w-full transition-transform duration-700 group-hover:scale-[1.02]"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   )

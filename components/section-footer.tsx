@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Heart, X, Copy, Check, Mail } from "lucide-react"
+import { Reveal } from "@/components/reveal"
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -33,6 +34,7 @@ export function SectionFooter() {
 
   return (
     <footer className="border-t border-border/50">
+      <Reveal delay={100} from="up" duration={600}>
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row">
         <p className="text-sm text-muted-foreground">
           &copy; {new Date().getFullYear()} NeoArch. Licensed under MIT.
@@ -71,6 +73,7 @@ export function SectionFooter() {
           <Heart className="inline h-3 w-3 text-red-500" />
         </p>
       </div>
+      </Reveal>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">

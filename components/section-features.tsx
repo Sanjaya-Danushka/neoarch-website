@@ -7,6 +7,7 @@ import {
   Puzzle,
   Cloud,
   Clock,
+  FileArchive,
 } from "lucide-react"
 import {
   Card,
@@ -14,6 +15,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Reveal } from "@/components/reveal"
+import { LazyIframe } from "@/components/lazy-iframe"
 
 const features = [
   {
@@ -54,6 +57,13 @@ const features = [
       "50+ built-in plugins with an extensible Python hook system. Browse and install community plugins from the store.",
   },
   {
+    icon: FileArchive,
+    title: "Install Local Packages",
+    description:
+      "Install .pkg.tar.zst, .deb, .rpm, .AppImage, and Flatpak local files with a single click. Auto-detects package type and resolves dependencies.",
+    video: "https://drive.google.com/file/d/196f6jP21weYETI6OZQ9qf7AqiVFDrC77/preview",
+  },
+  {
     icon: Cloud,
     title: "Cloud Sync",
     description:
@@ -72,27 +82,34 @@ export function SectionFeatures() {
   return (
     <section id="features" className="border-t border-border/50 py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="mx-auto mb-14 max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Everything you need to manage your system
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            NeoArch brings together all the tools Arch Linux users need in one
-            cohesive, modern interface.
-          </p>
-        </div>
+        <Reveal>
+          <div className="mx-auto mb-14 max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              Everything you need to manage your system
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              NeoArch brings together all the tools Arch Linux users need in one
+              cohesive, modern interface.
+            </p>
+          </div>
+        </Reveal>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {features.map((feature) => {
+          {features.map((feature, i) => {
             const Icon = feature.icon
             const hasVideo = "video" in feature
+            const col = i % 4
+            const from = col === 0 ? "left" : col === 3 ? "right" : "up"
             return (
-              <Card
+              <Reveal
                 key={feature.title}
-                className={`group relative overflow-visible border-border/50 bg-card/60 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 ${
-                  hasVideo ? "md:col-span-2 xl:col-span-2" : ""
-                }`}
+                delay={i * 80}
+                from={from}
+                className={hasVideo ? "md:col-span-2 xl:col-span-2" : ""}
               >
+                <Card
+                  className="group relative overflow-visible border-border/50 bg-card/60 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+                >
                 <div className="pointer-events-none absolute -inset-px rounded-xl opacity-0 ring-1 ring-primary/20 transition-opacity duration-300 group-hover:opacity-100" />
                 <CardHeader>
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-border/50 bg-primary/5 text-primary shadow-sm transition-shadow duration-300 group-hover:shadow-primary/10">
@@ -104,16 +121,12 @@ export function SectionFeatures() {
                 {hasVideo && (
                   <div className="px-4 pb-4">
                     <div className="glass overflow-hidden rounded-lg shadow-sm">
-                      <iframe
-                        src={(feature as any).video}
-                        className="aspect-video h-full w-full"
-                        allow="autoplay; encrypted-media"
-                        allowFullScreen
-                      />
+                      <LazyIframe src={(feature as any).video} title={feature.title} />
                     </div>
                   </div>
                 )}
               </Card>
+                </Reveal>
             )
           })}
         </div>

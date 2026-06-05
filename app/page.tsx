@@ -1,6 +1,7 @@
 import { SectionNavbar } from "@/components/section-navbar"
 import { SectionHero } from "@/components/section-hero"
 import { SectionFeatures } from "@/components/section-features"
+import { SectionDocker } from "@/components/section-docker"
 import { SectionDownload } from "@/components/section-download"
 import { SectionCommunity } from "@/components/section-community"
 import { SectionReviews } from "@/components/section-reviews"
@@ -14,6 +15,7 @@ export default function Page() {
       <main>
         <SectionHero />
         <SectionFeatures />
+        <SectionDocker />
         <SectionDownload />
         <SectionCommunity />
         <SectionReviews />

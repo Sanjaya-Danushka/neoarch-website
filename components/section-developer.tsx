@@ -1,5 +1,6 @@
 import { MapPin, BookOpen, Users, Briefcase } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { Reveal } from "@/components/reveal"
 
 function LinkedInIcon({ className }: { className?: string }) {
   return (
@@ -18,16 +19,19 @@ export function SectionDeveloper() {
   return (
     <section className="border-t border-border/50 py-20 md:py-28">
       <div className="mx-auto max-w-4xl px-4">
-        <div className="mx-auto mb-10 max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Built by a Developer, for Developers
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            NeoArch is crafted with passion by Sanjaya Danushka, a
-            Full-Cycle DevOps &amp; Software Engineer from Sri Lanka.
-          </p>
-        </div>
+        <Reveal>
+          <div className="mx-auto mb-10 max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              Built by a Developer, for Developers
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              NeoArch is crafted with passion by Sanjaya Danushka, a
+              Full-Cycle DevOps &amp; Software Engineer from Sri Lanka.
+            </p>
+          </div>
+        </Reveal>
 
+        <Reveal delay={200}>
         <div className="glass-strong glow relative rounded-2xl shadow-lg transition-all duration-300 hover:shadow-primary/5">
           <div className="grid gap-6 p-6 md:grid-cols-[auto_1fr] md:p-8">
             <div className="flex flex-col items-center gap-4 md:items-start">
@@ -102,6 +106,7 @@ export function SectionDeveloper() {
             </div>
           </div>
         </div>
+        </Reveal>
       </div>
     </section>
   )
