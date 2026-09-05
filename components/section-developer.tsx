@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { MapPin, BookOpen, Users, Briefcase } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Reveal } from "@/components/reveal"
@@ -17,11 +18,11 @@ function LinkedInIcon({ className }: { className?: string }) {
 
 export function SectionDeveloper() {
   return (
-    <section className="border-t border-border/50 py-20 md:py-28">
-      <div className="mx-auto max-w-4xl px-4">
+    <section className="border-t border-border py-20 md:py-28">
+      <div className="mx-auto max-w-4xl px-6">
         <Reveal>
-          <div className="mx-auto mb-10 max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
               Built by a Developer, for Developers
             </h2>
             <p className="mt-4 text-muted-foreground">
@@ -31,81 +32,83 @@ export function SectionDeveloper() {
           </div>
         </Reveal>
 
-        <Reveal delay={200}>
-        <div className="glass-strong glow relative rounded-2xl shadow-lg transition-all duration-300 hover:shadow-primary/5">
-          <div className="grid gap-6 p-6 md:grid-cols-[auto_1fr] md:p-8">
-            <div className="flex flex-col items-center gap-4 md:items-start">
-              <img
-                src="/developer.png"
-                alt="Sanjaya Danushka"
-                className="h-20 w-20 rounded-full border-2 border-border object-cover shadow-lg"
-              />
-              <div className="flex gap-2">
-                <a
-                  href="https://www.linkedin.com/in/sanjaya-danushka-4484292a0"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-[#0A66C2] px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90"
-                >
-                  <LinkedInIcon className="h-3.5 w-3.5" />
-                  LinkedIn
-                </a>
-                <a
-                  href="https://www.buymeacoffee.com/sanjayadanushka"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=sanjayadanushka&button_colour=FF5F5F&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"
-                    alt="Buy me a coffee"
-                    className="h-8"
-                  />
-                </a>
+        <Reveal delay={80}>
+          <div className="rounded-lg border border-border bg-card p-6 md:p-8">
+            <div className="grid gap-6 md:grid-cols-[auto_1fr] md:items-start">
+              <div className="flex flex-col items-center gap-4 md:items-start">
+                <Image
+                  src="/screenshots/developer.png"
+                  alt="Sanjaya Danushka"
+                  width={1254}
+                  height={1254}
+                  className="h-20 w-20 rounded-full border border-border object-cover"
+                />
+                <div className="flex gap-2">
+                  <a
+                    href="https://www.linkedin.com/in/sanjaya-danushka-4484292a0"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-md bg-[#0A66C2] px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90"
+                  >
+                    <LinkedInIcon className="h-3.5 w-3.5" />
+                    LinkedIn
+                  </a>
+                  <a
+                    href="https://www.buymeacoffee.com/sanjayadanushka"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=sanjayadanushka&button_colour=FF5F5F&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"
+                      alt="Buy me a coffee"
+                      className="h-8"
+                    />
+                  </a>
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-3">
-              <div>
-                <h3 className="text-xl font-bold">Sanjaya Danushka</h3>
-                <p className="text-sm text-muted-foreground">
-                  Full-Cycle DevOps &amp; Software Engineer | Open-Source
-                  Contributor | Author of &ldquo;The Art of Software
-                  Engineering&rdquo; | ACE Multicloud Network Associate
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-xl font-semibold">Sanjaya Danushka</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    Full-Cycle DevOps &amp; Software Engineer | Open-Source
+                    Contributor | Author of &ldquo;The Art of Software
+                    Engineering&rdquo; | ACE Multicloud Network Associate
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    Badulla District, Sri Lanka
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <Briefcase className="h-3 w-3" />
+                    Open to work
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    20K+ followers
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <Badge variant="secondary">
+                    Open Source Developers Community
+                  </Badge>
+                  <Badge variant="secondary">Asia e University</Badge>
+                  <Badge variant="outline">#OpenToWork</Badge>
+                </div>
+
+                <p className="pt-1 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <BookOpen className="h-3 w-3" />
+                    Author of &ldquo;The Art of Software Engineering&rdquo;
+                  </span>
                 </p>
               </div>
-
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  Badulla District, Sri Lanka
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <Briefcase className="h-3 w-3" />
-                  Open to work
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <Users className="h-3 w-3" />
-                  20K+ followers
-                </span>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2 text-xs">
-                <Badge variant="secondary">
-                  Open Source Developers Community
-                </Badge>
-                <Badge variant="secondary">Asia e University</Badge>
-                <Badge variant="outline">#OpenToWork</Badge>
-              </div>
-
-              <p className="pt-1 text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1">
-                  <BookOpen className="h-3 w-3" />
-                  Author of &ldquo;The Art of Software Engineering&rdquo;
-                </span>
-              </p>
             </div>
           </div>
-        </div>
         </Reveal>
       </div>
     </section>

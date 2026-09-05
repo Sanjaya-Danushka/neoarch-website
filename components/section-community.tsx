@@ -1,7 +1,13 @@
-import { Bug, MessageSquare, Package, Rocket, ExternalLink } from "lucide-react"
+import { Bug, BookOpen, MessageSquare, Package, Rocket, ExternalLink } from "lucide-react"
 import { Reveal } from "@/components/reveal"
 
 const communityLinks = [
+  {
+    icon: BookOpen,
+    title: "Documentation",
+    description: "Install guide, quick start, and user manual",
+    href: "https://github.com/Sanjaya-Danushka/Neoarch/wiki",
+  },
   {
     icon: Bug,
     title: "Report Issues",
@@ -30,11 +36,11 @@ const communityLinks = [
 
 export function SectionCommunity() {
   return (
-    <section id="community" className="border-t border-border/50 py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-4">
+    <section id="community" className="border-t border-border py-20 md:py-28">
+      <div className="mx-auto max-w-6xl px-6">
         <Reveal>
-          <div className="mx-auto mb-14 max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+          <div className="mx-auto mb-16 max-w-2xl text-center">
+            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
               Join the Community
             </h2>
             <p className="mt-4 text-muted-foreground">
@@ -48,24 +54,26 @@ export function SectionCommunity() {
           {communityLinks.map((link, i) => {
             const Icon = link.icon
             return (
-              <Reveal key={link.title} delay={i * 100} from="up">
-              <a
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group block relative rounded-xl border border-border/50 bg-card/60 p-6 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
-              >
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-border/50 bg-primary/5 text-primary">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold">{link.title}</h3>
-                  <ExternalLink className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </div>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {link.description}
-                </p>
-              </a>
+              <Reveal key={link.title} delay={i * 40}>
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-start gap-4 rounded-lg border border-border bg-card p-6 transition-colors hover:bg-card/60"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-secondary text-primary">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-[15px] font-medium">{link.title}</h3>
+                      <ExternalLink className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {link.description}
+                    </p>
+                  </div>
+                </a>
               </Reveal>
             )
           })}

@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Heart, X, Copy, Check, Mail } from "lucide-react"
-import { Reveal } from "@/components/reveal"
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -33,9 +32,8 @@ export function SectionFooter() {
   }
 
   return (
-    <footer className="border-t border-border/50">
-      <Reveal delay={100} from="up" duration={600}>
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row">
+    <footer className="border-t border-border">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 md:flex-row">
         <p className="text-sm text-muted-foreground">
           &copy; {new Date().getFullYear()} NeoArch. Licensed under MIT.
         </p>
@@ -60,6 +58,15 @@ export function SectionFooter() {
             License
           </a>
           <span className="text-border">|</span>
+          <a
+            href="https://github.com/Sanjaya-Danushka/Neoarch/wiki"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-foreground"
+          >
+            Docs
+          </a>
+          <span className="text-border">|</span>
           <button
             onClick={() => setOpen(true)}
             className="cursor-pointer transition-colors hover:text-foreground"
@@ -73,11 +80,10 @@ export function SectionFooter() {
           <Heart className="inline h-3 w-3 text-red-500" />
         </p>
       </div>
-      </Reveal>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="glass-strong relative w-full max-w-sm rounded-xl p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="relative w-full max-w-sm rounded-lg border border-border bg-background p-6">
             <button
               onClick={() => setOpen(false)}
               className="absolute right-4 top-4 text-muted-foreground transition-colors hover:text-foreground"
@@ -94,10 +100,10 @@ export function SectionFooter() {
               {contacts.map((c) => (
                 <div
                   key={c.email}
-                  className="flex items-center justify-between rounded-lg border border-border/50 px-4 py-3"
+                  className="flex items-center justify-between rounded-md border border-border px-4 py-3"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-primary">
                       <Mail className="h-4 w-4" />
                     </div>
                     <div>
@@ -107,7 +113,7 @@ export function SectionFooter() {
                   </div>
                   <button
                     onClick={() => copy(c.email)}
-                    className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                   >
                     {copied === c.email ? (
                       <Check className="h-4 w-4 text-green-500" />

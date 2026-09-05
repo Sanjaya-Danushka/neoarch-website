@@ -1,27 +1,44 @@
 import { NextResponse } from "next/server"
-import { connectDB } from "@/lib/db"
-import { Review } from "@/lib/models/review"
+import { auth } from "@clerk/nextjs/server"
+import { updateReview, deleteReview } from "@/lib/supabase"
 
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { userId, getToken } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 })
+    }
+    const token = await getToken()
+    if (!token) {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 })
+    }
+
     const { id } = await params
     const body = await req.json()
-    await connectDB()
+    const name = typeof body.name === "string" ? body.name.trim() : ""
+    const rating = Number(body.rating)
+    const message = typeof body.message === "string" ? body.message.trim() : ""
 
-    const review = await Review.findById(id)
-    if (!review) {
-      return NextResponse.json({ error: "Review not found" }, { status: 404 })
+    if (!name || !Number.isInteger(rating) || rating < 1 || rating > 5 || !message) {
+      return NextResponse.json({ error: "Invalid review" }, { status: 400 })
     }
 
-    if (review.email !== body.email) {
-      return NextResponse.json({ error: "Email mismatch" }, { status: 403 })
+    try {
+      const updated = await updateReview(token, userId, id, {
+        name,
+        rating,
+        message,
+      })
+      return NextResponse.json(updated)
+    } catch {
+      return NextResponse.json(
+        { error: "Review not found or not owned by you" },
+        { status: 403 },
+      )
     }
-
-    const updated = await Review.findByIdAndUpdate(id, body, { new: true })
-    return NextResponse.json(updated)
   } catch {
     return NextResponse.json(
       { error: "Failed to update review" },
@@ -31,25 +48,29 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { userId, getToken } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 })
+    }
+    const token = await getToken()
+    if (!token) {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 })
+    }
+
     const { id } = await params
-    const { email } = await req.json()
-    await connectDB()
-
-    const review = await Review.findById(id)
-    if (!review) {
-      return NextResponse.json({ error: "Review not found" }, { status: 404 })
+    try {
+      await deleteReview(token, userId, id)
+      return NextResponse.json({ success: true })
+    } catch {
+      return NextResponse.json(
+        { error: "Review not found or not owned by you" },
+        { status: 403 },
+      )
     }
-
-    if (review.email !== email) {
-      return NextResponse.json({ error: "Email mismatch" }, { status: 403 })
-    }
-
-    await Review.findByIdAndDelete(id)
-    return NextResponse.json({ success: true })
   } catch {
     return NextResponse.json(
       { error: "Failed to delete review" },

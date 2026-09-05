@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server"
-import { connectDB } from "@/lib/db"
-import { Review } from "@/lib/models/review"
+import { auth } from "@clerk/nextjs/server"
+import { listReviews, insertReview } from "@/lib/supabase"
 
 export async function GET() {
   try {
-    await connectDB()
-    const reviews = await Review.find().sort({ createdAt: -1 }).lean()
+    const reviews = await listReviews()
     return NextResponse.json(reviews)
   } catch {
     return NextResponse.json(
@@ -17,9 +16,31 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const { userId, getToken } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 })
+    }
+
     const body = await req.json()
-    await connectDB()
-    const review = await Review.create(body)
+    const name = typeof body.name === "string" ? body.name.trim() : ""
+    const rating = Number(body.rating)
+    const message = typeof body.message === "string" ? body.message.trim() : ""
+
+    if (!name || !Number.isInteger(rating) || rating < 1 || rating > 5 || !message) {
+      return NextResponse.json({ error: "Invalid review" }, { status: 400 })
+    }
+
+    const token = await getToken()
+    if (!token) {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 })
+    }
+
+    const review = await insertReview(token, {
+      user_id: userId,
+      name,
+      rating,
+      message,
+    })
     return NextResponse.json(review, { status: 201 })
   } catch {
     return NextResponse.json(

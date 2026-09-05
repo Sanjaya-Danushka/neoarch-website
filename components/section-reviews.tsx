@@ -1,29 +1,30 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useUser } from "@clerk/nextjs"
 import {
   Star,
   Send,
   MessageSquare,
   User,
-  Mail,
   Pencil,
   Trash2,
   X,
   Check,
-  Lock,
+  LogIn,
 } from "lucide-react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Reveal } from "@/components/reveal"
 
 interface Review {
-  _id: string
+  id: string
+  user_id: string
   name: string
-  email: string
   rating: number
   message: string
-  createdAt: string
+  created_at: string
 }
 
 function StarRating({
@@ -47,7 +48,7 @@ function StarRating({
           disabled={readonly}
           onClick={() => onChange?.(star)}
           className={`transition-colors ${
-            readonly ? "cursor-default" : "cursor-pointer hover:scale-110"
+            readonly ? "cursor-default" : "cursor-pointer hover:text-yellow-500"
           }`}
         >
           <Star
@@ -63,19 +64,23 @@ function StarRating({
   )
 }
 
+function selectAllOnCtrlA(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
+    e.preventDefault()
+    e.currentTarget.select()
+  }
+}
+
 export function SectionReviews() {
+  const { isSignedIn, user } = useUser()
   const [reviews, setReviews] = useState<Review[]>([])
-  const [form, setForm] = useState({ name: "", email: "", rating: 0, message: "" })
+  const [form, setForm] = useState({ name: "", rating: 0, message: "" })
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState("")
 
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [editForm, setEditForm] = useState({ name: "", email: "", rating: 0, message: "" })
-
-  const [verifyEmail, setVerifyEmail] = useState("")
-  const [verifyTarget, setVerifyTarget] = useState<{ id: string; action: "edit" | "delete" } | null>(null)
-  const [verifyError, setVerifyError] = useState("")
+  const [editForm, setEditForm] = useState({ name: "", rating: 0, message: "" })
 
   useEffect(() => {
     fetch("/api/reviews")
@@ -86,7 +91,8 @@ export function SectionReviews() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!form.name || !form.email || !form.rating || !form.message) {
+    const name = form.name || user?.firstName || user?.username || ""
+    if (!name || !form.rating || !form.message) {
       setError("Please fill in all fields")
       return
     }
@@ -96,16 +102,23 @@ export function SectionReviews() {
       const res = await fetch("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, name }),
       })
-      if (!res.ok) throw new Error("Failed to submit")
+      if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error("Please sign in to review")
+        }
+        throw new Error("Failed to submit")
+      }
       const review = await res.json()
       setReviews((prev) => [review, ...prev])
-      setForm({ name: "", email: "", rating: 0, message: "" })
+      setForm({ name: form.name, rating: 0, message: "" })
       setSubmitted(true)
       setTimeout(() => setSubmitted(false), 3000)
-    } catch {
-      setError("Something went wrong. Please try again.")
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Something went wrong. Please try again.",
+      )
     } finally {
       setSubmitting(false)
     }
@@ -114,13 +127,10 @@ export function SectionReviews() {
   function startEdit(review: Review) {
     setEditForm({
       name: review.name,
-      email: review.email,
       rating: review.rating,
       message: review.message,
     })
-    setEditingId(review._id)
-    setVerifyTarget(null)
-    setVerifyEmail("")
+    setEditingId(review.id)
   }
 
   async function handleUpdate() {
@@ -133,7 +143,7 @@ export function SectionReviews() {
       })
       if (!res.ok) throw new Error("Failed to update")
       const updated = await res.json()
-      setReviews((prev) => prev.map((r) => (r._id === editingId ? updated : r)))
+      setReviews((prev) => prev.map((r) => (r.id === editingId ? updated : r)))
       setEditingId(null)
     } catch {
       setError("Failed to update review")
@@ -145,46 +155,20 @@ export function SectionReviews() {
       const res = await fetch(`/api/reviews/${id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: verifyEmail }),
       })
       if (!res.ok) throw new Error("Failed to delete")
-      setReviews((prev) => prev.filter((r) => r._id !== id))
-      setVerifyTarget(null)
-      setVerifyEmail("")
+      setReviews((prev) => prev.filter((r) => r.id !== id))
     } catch {
-      setVerifyError("Failed to delete. Check your email.")
-    }
-  }
-
-  function promptVerify(id: string, action: "edit" | "delete") {
-    setVerifyTarget({ id, action })
-    setVerifyEmail("")
-    setVerifyError("")
-  }
-
-  function handleVerify() {
-    if (!verifyTarget) return
-    const review = reviews.find((r) => r._id === verifyTarget.id)
-    if (!review) return
-
-    if (review.email !== verifyEmail) {
-      setVerifyError("Email does not match the review owner.")
-      return
-    }
-
-    if (verifyTarget.action === "edit") {
-      startEdit(review)
-    } else {
-      handleDelete(verifyTarget.id)
+      setError("Failed to delete review")
     }
   }
 
   return (
-    <section id="reviews" className="border-t border-border/50 py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-4">
+    <section id="reviews" className="border-t border-border py-20 md:py-28">
+      <div className="mx-auto max-w-6xl px-6">
         <Reveal>
-          <div className="mx-auto mb-14 max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+          <div className="mx-auto mb-16 max-w-2xl text-center">
+            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
               What Users Say
             </h2>
             <p className="mt-4 text-muted-foreground">
@@ -194,7 +178,7 @@ export function SectionReviews() {
         </Reveal>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_1.5fr]">
-          <Card className="h-fit border-border/50 bg-card/60 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+          <Card className="h-fit border-border bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <MessageSquare className="h-4 w-4 text-primary" />
@@ -202,82 +186,81 @@ export function SectionReviews() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                    <User className="h-3 w-3" />
-                    Name
-                  </label>
-                  <input
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="Your name"
-                    className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-sm outline-none ring-primary/30 transition-all placeholder:text-muted-foreground/40 focus:border-primary/50 focus:ring-2"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                    <Mail className="h-3 w-3" />
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    placeholder="your@email.com"
-                    className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-sm outline-none ring-primary/30 transition-all placeholder:text-muted-foreground/40 focus:border-primary/50 focus:ring-2"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                    <Star className="h-3 w-3" />
-                    Rating
-                  </label>
-                  <StarRating
-                    value={form.rating}
-                    onChange={(v) => setForm({ ...form, rating: v })}
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                    <MessageSquare className="h-3 w-3" />
-                    Message
-                  </label>
-                  <textarea
-                    value={form.message}
-                    onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    placeholder="Share your experience..."
-                    rows={4}
-                    className="w-full resize-none rounded-lg border border-border/50 bg-background px-3 py-2 text-sm outline-none ring-primary/30 transition-all placeholder:text-muted-foreground/40 focus:border-primary/50 focus:ring-2"
-                  />
-                </div>
-
-                {error && <p className="text-xs text-red-500">{error}</p>}
-
-                {submitted && (
-                  <p className="text-xs text-green-500">
-                    Review submitted successfully!
+              {!isSignedIn ? (
+                <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-12 text-center">
+                  <LogIn className="mb-3 h-8 w-8 text-muted-foreground/40" />
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    Sign in to leave a review.
                   </p>
-                )}
+                  <Button asChild>
+                    <Link href="/sign-in">Sign in</Link>
+                  </Button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                      <User className="h-3 w-3" />
+                      Name
+                    </label>
+                    <input
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      placeholder="Your name"
+                      className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none"
+                    />
+                  </div>
 
-                <Button type="submit" disabled={submitting} className="w-full">
-                  {submitting ? "Submitting..." : (
-                    <>
-                      Send Review
-                      <Send className="ml-2 h-3 w-3" />
-                    </>
+                  <div>
+                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                      <Star className="h-3 w-3" />
+                      Rating
+                    </label>
+                    <StarRating
+                      value={form.rating}
+                      onChange={(v) => setForm({ ...form, rating: v })}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                      <MessageSquare className="h-3 w-3" />
+                      Message
+                    </label>
+                    <textarea
+                      value={form.message}
+                      onChange={(e) => setForm({ ...form, message: e.target.value })}
+                      onKeyDown={selectAllOnCtrlA}
+                      placeholder="Share your experience..."
+                      rows={4}
+                      className="w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none"
+                    />
+                  </div>
+
+                  {error && <p className="text-xs text-red-500">{error}</p>}
+
+                  {submitted && (
+                    <p className="text-xs text-green-500">
+                      Review submitted successfully!
+                    </p>
                   )}
-                </Button>
-              </form>
+
+                  <Button type="submit" disabled={submitting} className="w-full">
+                    {submitting ? "Submitting..." : (
+                      <>
+                        Send Review
+                        <Send className="ml-2 h-3 w-3" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              )}
             </CardContent>
           </Card>
 
           <div className="space-y-4">
             {reviews.length === 0 ? (
-              <div className="glass flex flex-col items-center justify-center rounded-xl py-16 text-center shadow-sm">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-16 text-center">
                 <MessageSquare className="mb-3 h-8 w-8 text-muted-foreground/40" />
                 <p className="text-sm text-muted-foreground">
                   No reviews yet. Be the first!
@@ -285,9 +268,9 @@ export function SectionReviews() {
               </div>
             ) : (
               reviews.map((review) => (
-                <Card key={review._id} className="border-border/50 bg-card/60 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-md">
+                <Card key={review.id} className="border-border bg-card">
                   <CardContent className="pt-4">
-                    {editingId === review._id ? (
+                    {editingId === review.id ? (
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <h4 className="text-sm font-medium">Edit Review</h4>
@@ -302,14 +285,7 @@ export function SectionReviews() {
                           value={editForm.name}
                           onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                           placeholder="Name"
-                          className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-sm outline-none ring-primary/30 focus:border-primary/50 focus:ring-2"
-                        />
-                        <input
-                          type="email"
-                          value={editForm.email}
-                          onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                          placeholder="Email"
-                          className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-sm outline-none ring-primary/30 focus:border-primary/50 focus:ring-2"
+                          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none"
                         />
                         <StarRating
                           value={editForm.rating}
@@ -319,9 +295,10 @@ export function SectionReviews() {
                         <textarea
                           value={editForm.message}
                           onChange={(e) => setEditForm({ ...editForm, message: e.target.value })}
+                          onKeyDown={selectAllOnCtrlA}
                           placeholder="Message"
                           rows={3}
-                          className="w-full resize-none rounded-lg border border-border/50 bg-background px-3 py-2 text-sm outline-none ring-primary/30 focus:border-primary/50 focus:ring-2"
+                          className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none"
                         />
                         <div className="flex gap-2">
                           <Button size="sm" onClick={handleUpdate}>
@@ -343,64 +320,36 @@ export function SectionReviews() {
                             <div>
                               <p className="text-sm font-medium">{review.name}</p>
                               <p className="text-[10px] text-muted-foreground">
-                                {new Date(review.createdAt).toLocaleDateString()}
+                                {new Date(review.created_at).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-1">
                             <StarRating value={review.rating} readonly />
-                            <button
-                              onClick={() => promptVerify(review._id, "edit")}
-                              className="ml-1 rounded p-1 text-muted-foreground/40 transition-colors hover:bg-accent hover:text-foreground"
-                              title="Edit"
-                            >
-                              <Pencil className="h-3 w-3" />
-                            </button>
-                            <button
-                              onClick={() => promptVerify(review._id, "delete")}
-                              className="rounded p-1 text-muted-foreground/40 transition-colors hover:bg-accent hover:text-red-500"
-                              title="Delete"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
+                            {isSignedIn && user?.id === review.user_id && (
+                              <>
+                                <button
+                                  onClick={() => startEdit(review)}
+                                  className="ml-1 rounded p-1 text-muted-foreground/40 transition-colors hover:bg-accent hover:text-foreground"
+                                  title="Edit"
+                                >
+                                  <Pencil className="h-3 w-3" />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(review.id)}
+                                  className="rounded p-1 text-muted-foreground/40 transition-colors hover:bg-accent hover:text-red-500"
+                                  title="Delete"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
                         <p className="text-sm text-muted-foreground">
                           {review.message}
                         </p>
                       </>
-                    )}
-
-                    {verifyTarget && verifyTarget.id === review._id && (
-                      <div className="mt-3 rounded-lg border border-border/50 bg-muted/50 p-3">
-                        <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                          <Lock className="h-3 w-3" />
-                          Enter your email to {verifyTarget.action}
-                        </p>
-                        <div className="flex gap-2">
-                          <input
-                            type="email"
-                            value={verifyEmail}
-                            onChange={(e) => setVerifyEmail(e.target.value)}
-                            placeholder="your@email.com"
-                            className="flex-1 rounded-lg border border-border/50 bg-background px-3 py-1.5 text-xs outline-none ring-primary/30 focus:border-primary/50 focus:ring-2"
-                          />
-                          <Button size="sm" onClick={handleVerify}>
-                            <Check className="mr-1 h-3 w-3" />
-                            Verify
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setVerifyTarget(null)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        {verifyError && (
-                          <p className="mt-1 text-xs text-red-500">{verifyError}</p>
-                        )}
-                      </div>
                     )}
                   </CardContent>
                 </Card>

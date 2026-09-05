@@ -1,8 +1,11 @@
 import { Geist, Geist_Mono } from "next/font/google"
 import type { Metadata } from "next"
+import { ClerkProvider } from "@clerk/nextjs"
+import { shadcn } from "@clerk/ui/themes"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { DesktopCallback } from "@/components/desktop-callback"
 import { cn } from "@/lib/utils"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
@@ -52,7 +55,10 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ClerkProvider appearance={{ theme: shadcn }}>
+          <DesktopCallback />
+          <ThemeProvider>{children}</ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   )

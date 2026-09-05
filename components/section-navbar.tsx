@@ -1,15 +1,17 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Menu, X } from "lucide-react"
-import { useTheme } from "@/components/theme-provider"
+import Image from "next/image"
+import Link from "next/link"
+import { Menu, X, ArrowUpRight } from "lucide-react"
+import { UserButton, Show } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 const navLinks = [
   { href: "#features", label: "Features" },
-  { href: "#docker", label: "Docker" },
   { href: "#download", label: "Download" },
+  { href: "#docker", label: "Power Tools" },
   { href: "#community", label: "Community" },
   { href: "#reviews", label: "Reviews" },
 ]
@@ -29,16 +31,12 @@ function GitHubIcon({ className }: { className?: string }) {
 
 export function SectionNavbar() {
   const [open, setOpen] = useState(false)
-  const [scrollProgress, setScrollProgress] = useState(0)
+  const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState("")
-  const { theme, setTheme, resolvedTheme } = useTheme()
 
   useEffect(() => {
-    const onScroll = () => {
-      const scrollTop = window.scrollY
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight
-      setScrollProgress(docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0)
-    }
+    const onScroll = () => setScrolled(window.scrollY > 12)
+    onScroll()
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
@@ -64,17 +62,27 @@ export function SectionNavbar() {
   }, [])
 
   return (
-    <>
+    <header className="fixed inset-x-0 top-0 z-50">
       <div
-        className="fixed top-0 left-0 z-[60] h-0.5 bg-primary transition-all duration-150"
-        style={{ width: `${scrollProgress * 100}%` }}
-      />
-
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-border/50 bg-background/60 backdrop-blur-xl shadow-sm">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <a href="#" className="flex items-center gap-2">
-            <img src="/logo.png" alt="NeoArch" className="h-8 w-auto" />
-            <span className="text-xl font-bold tracking-tight text-primary">
+        className={cn(
+          "transition-all duration-300",
+          scrolled
+            ? "border-b border-border bg-background/80 backdrop-blur-xl"
+            : "border-b border-transparent bg-transparent",
+        )}
+      >
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <a href="#" className="group flex items-center gap-2.5">
+            <span className="relative grid size-8 place-items-center">
+              <Image
+                src="/logo.png"
+                alt="NeoArch"
+                width={32}
+                height={32}
+                className="h-7 w-7 rounded-lg object-contain transition-transform duration-200 group-hover:scale-105"
+              />
+            </span>
+            <span className="text-[15px] font-semibold tracking-tight text-foreground">
               NeoArch
             </span>
           </a>
@@ -85,10 +93,9 @@ export function SectionNavbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "rounded-md px-3 py-1.5 text-sm transition-all duration-200",
-                  activeSection === link.href.slice(1)
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+                  "relative rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
+                  activeSection === link.href.slice(1) &&
+                    "text-foreground after:absolute after:inset-x-3 after:bottom-0.5 after:h-px after:rounded-full after:bg-primary",
                 )}
               >
                 {link.label}
@@ -96,34 +103,50 @@ export function SectionNavbar() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" asChild>
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <Show when="signed-in">
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "size-8 rounded-full",
+                  },
+                }}
+              />
+            </Show>
+            <Show when="signed-out">
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
+                <Link href="/sign-in">Sign in</Link>
+              </Button>
+              <Button size="sm" className="hidden sm:inline-flex" asChild>
+                <Link href="/sign-up">Sign up</Link>
+              </Button>
+            </Show>
+
+            <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
+              <a
+                href="https://github.com/Sanjaya-Danushka/Neoarch"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <GitHubIcon className="size-4" />
+                <span className="hidden lg:inline">GitHub</span>
+                <ArrowUpRight className="size-3.5 opacity-50" />
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="sm:hidden"
+              asChild
+            >
               <a
                 href="https://github.com/Sanjaya-Danushka/Neoarch"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
               >
-                <GitHubIcon className="h-5 w-5" />
+                <GitHubIcon className="size-4" />
               </a>
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-              aria-label="Toggle theme"
-            >
-              <span className={cn(
-                "inline-block transition-transform duration-500",
-                resolvedTheme === "dark" ? "rotate-0" : "rotate-90",
-              )}>
-                {resolvedTheme === "dark" ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                )}
-              </span>
             </Button>
 
             <Button
@@ -137,54 +160,42 @@ export function SectionNavbar() {
             </Button>
           </div>
         </div>
-      </header>
-
-      <div
-        className={cn(
-          "fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 bg-background/95 backdrop-blur-2xl transition-all duration-500 md:hidden",
-          open
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0",
-        )}
-      >
-        {navLinks.map((link, i) => (
-          <a
-            key={link.href}
-            href={link.href}
-            onClick={() => setOpen(false)}
-            className="text-2xl font-medium transition-colors hover:text-primary"
-            style={{
-              transitionDelay: open ? `${i * 80}ms` : "0ms",
-              transition: `opacity 400ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1)`,
-              opacity: open ? 1 : 0,
-              transform: open ? "translateY(0)" : "translateY(20px)",
-            }}
-          >
-            {link.label}
-          </a>
-        ))}
-        <Button
-          variant="default"
-          size="lg"
-          className="mt-4"
-          style={{
-            transitionDelay: open ? `${navLinks.length * 80}ms` : "0ms",
-            transition: `opacity 400ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1)`,
-            opacity: open ? 1 : 0,
-            transform: open ? "translateY(0)" : "translateY(20px)",
-          }}
-          asChild
-        >
-          <a
-            href="https://github.com/Sanjaya-Danushka/Neoarch"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <GitHubIcon className="mr-2 h-4 w-4" />
-            View on GitHub
-          </a>
-        </Button>
       </div>
-    </>
+
+      {open && (
+        <div className="border-b border-border bg-background md:hidden">
+          <nav className="mx-auto flex max-w-6xl flex-col px-6 py-3">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className={cn(
+                  "flex items-center justify-between border-b border-border py-3 text-sm text-muted-foreground last:border-0 hover:text-foreground",
+                  activeSection === link.href.slice(1) && "text-foreground",
+                )}
+              >
+                {link.label}
+                <ArrowUpRight className="size-4 opacity-30" />
+              </a>
+            ))}
+            <div className="flex gap-2 py-3">
+              <Show when="signed-out">
+                <Button size="sm" variant="outline" className="flex-1" asChild>
+                  <Link href="/sign-in" onClick={() => setOpen(false)}>
+                    Sign in
+                  </Link>
+                </Button>
+                <Button size="sm" className="flex-1" asChild>
+                  <Link href="/sign-up" onClick={() => setOpen(false)}>
+                    Sign up
+                  </Link>
+                </Button>
+              </Show>
+            </div>
+          </nav>
+        </div>
+      )}
+    </header>
   )
 }
