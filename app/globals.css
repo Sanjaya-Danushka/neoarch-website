@@ -13,6 +13,15 @@
   }
 }
 
+@keyframes carousel-kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
 @utility text-balance {
   text-wrap: balance;
 }

@@ -229,72 +229,88 @@ export function SectionDownload() {
               onMouseEnter={() => setPaused(true)}
               onMouseLeave={() => setPaused(false)}
             >
-              <div className="relative rounded-2xl bg-gradient-to-b from-primary/40 via-primary/10 to-primary/40 p-px shadow-[0_0_40px_-12px_hsl(var(--primary)/0.4),0_0_110px_-36px_hsl(var(--primary)/0.3)]">
-                <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[15px] bg-secondary/40 [perspective:1400px]">
-                  {screenshots.map((s, i) => {
-                    const diff = i - current
-                    const active = diff === 0
-                    return (
-                      <button
-                        key={s.src}
-                        type="button"
-                        onClick={() => setView(i)}
-                        className={cn(
-                          "absolute inset-0 w-full cursor-zoom-in transition-all duration-700 ease-out will-change-transform",
-                          active && "z-10 shadow-2xl shadow-black/40",
-                        )}
-                        style={{
-                          transform: active
-                            ? "translateX(0) rotateY(0deg) scale(1)"
-                            : diff < 0
-                              ? "translateX(-12%) rotateY(14deg) scale(0.94)"
-                              : "translateX(12%) rotateY(-14deg) scale(0.94)",
-                          opacity: active ? 1 : 0,
-                        }}
-                        aria-label={`View ${s.label} full screen`}
-                      >
-                        <Image
-                          src={s.src}
-                          alt={s.label}
-                          width={s.width}
-                          height={s.height}
-                          loading={i === 0 ? undefined : "lazy"}
-                          sizes="(max-width: 768px) 100vw, 700px"
-                          className="h-full w-full object-cover"
-                        />
-                      </button>
-                    )
-                  })}
-
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-0.5 bg-border/60">
-                    <div
-                      className="h-full origin-left bg-white/70"
-                      style={{
-                        animation: `carousel-progress ${AUTOPLAY_MS}ms linear forwards`,
-                        animationPlayState:
-                          paused || view !== null ? "paused" : "running",
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={prev}
-                  className="absolute top-1/2 left-4 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/90 text-muted-foreground shadow-md backdrop-blur-sm transition-colors hover:bg-primary hover:text-primary-foreground"
-                  aria-label="Previous screenshot"
-                >
-                  <ChevronLeft className="size-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={next}
-                  className="absolute top-1/2 right-4 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/90 text-muted-foreground shadow-md backdrop-blur-sm transition-colors hover:bg-primary hover:text-primary-foreground"
-                  aria-label="Next screenshot"
-                >
-                  <ChevronRight className="size-5" />
-                </button>
+              <div
+                key={current}
+                className="pointer-events-none absolute -inset-16 -z-10 bg-secondary blur-3xl"
+                aria-hidden
+              >
+                <Image
+                  src={screenshots[current].src}
+                  alt=""
+                  width={screenshots[current].width}
+                  height={screenshots[current].height}
+                  className="h-full w-full object-cover opacity-35 saturate-150"
+                />
               </div>
+
+              <div className="relative aspect-[3/2] w-full overflow-hidden rounded-xl border border-border bg-secondary/40 shadow-xl shadow-black/40 [perspective:1400px]">
+                {screenshots.map((s, i) => {
+                  const diff = i - current
+                  const active = diff === 0
+                  return (
+                    <button
+                      key={s.src}
+                      type="button"
+                      onClick={() => setView(i)}
+                      className={cn(
+                        "absolute inset-0 w-full cursor-zoom-in transition-all duration-700 ease-out will-change-transform",
+                        active && "z-10",
+                      )}
+                      style={{
+                        transform: active
+                          ? "translateX(0) rotateY(0deg) scale(1)"
+                          : diff < 0
+                            ? "translateX(-14%) rotateY(18deg) scale(0.93)"
+                            : "translateX(14%) rotateY(-18deg) scale(0.93)",
+                        opacity: active ? 1 : 0,
+                      }}
+                      aria-label={`View ${s.label} full screen`}
+                    >
+                      <Image
+                        src={s.src}
+                        alt={s.label}
+                        width={s.width}
+                        height={s.height}
+                        loading={i === 0 ? undefined : "lazy"}
+                        sizes="(max-width: 1024px) 100vw, 900px"
+                        className={cn(
+                          "h-full w-full object-cover",
+                          active &&
+                            "animate-[carousel-kenburns_5s_linear_forwards] group-hover:[animation-play-state:paused]",
+                        )}
+                      />
+                    </button>
+                  )
+                })}
+
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-0.5 bg-border/60">
+                  <div
+                    className="h-full origin-left bg-primary"
+                    style={{
+                      animation: `carousel-progress ${AUTOPLAY_MS}ms linear forwards`,
+                      animationPlayState:
+                        paused || view !== null ? "paused" : "running",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={prev}
+                className="absolute top-1/2 left-3 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/80 text-muted-foreground shadow-lg backdrop-blur-md transition-colors hover:bg-primary hover:text-primary-foreground"
+                aria-label="Previous screenshot"
+              >
+                <ChevronLeft className="size-5" />
+              </button>
+              <button
+                type="button"
+                onClick={next}
+                className="absolute top-1/2 right-3 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/80 text-muted-foreground shadow-lg backdrop-blur-md transition-colors hover:bg-primary hover:text-primary-foreground"
+                aria-label="Next screenshot"
+              >
+                <ChevronRight className="size-5" />
+              </button>
 
               <div className="mt-6 flex items-center justify-center gap-2.5">
                 {screenshots.map((s, i) => (
@@ -305,8 +321,8 @@ export function SectionDownload() {
                     className={cn(
                       "rounded-full transition-all duration-300",
                       i === current
-                        ? "h-2.5 w-7 bg-foreground shadow-[0_0_14px_-2px_rgba(255,255,255,0.6)]"
-                        : "h-2.5 w-2.5 bg-border hover:bg-foreground/40",
+                        ? "h-2.5 w-7 bg-primary shadow-[0_0_14px_-2px_hsl(var(--primary)/0.7)]"
+                        : "h-2.5 w-2.5 bg-border hover:bg-muted-foreground/60",
                     )}
                     aria-label={`Go to ${s.label}`}
                     aria-current={i === current}
