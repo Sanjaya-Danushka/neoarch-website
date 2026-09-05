@@ -1,6 +1,6 @@
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
-  "http://localhost:3000"
+  "https://neoarchstudio.netlify.app"
 
 export const SITE_NAME = "NeoArch"
 export const SITE_DESCRIPTION =
