@@ -68,14 +68,14 @@ export function SectionNavbar() {
           "transition-all duration-300",
           scrolled
             ? "border-b border-border bg-background/80 backdrop-blur-xl"
-            : "border-b border-transparent bg-transparent",
+            : "border-b border-transparent bg-transparent"
         )}
       >
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <a href="#" className="group flex items-center gap-2.5">
             <span className="relative grid size-8 place-items-center">
               <Image
-                src="/logo.png"
+                src="/logo copy.png"
                 alt="NeoArch"
                 width={32}
                 height={32}
@@ -95,7 +95,7 @@ export function SectionNavbar() {
                 className={cn(
                   "relative rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
                   activeSection === link.href.slice(1) &&
-                    "text-foreground after:absolute after:inset-x-3 after:bottom-0.5 after:h-px after:rounded-full after:bg-primary",
+                    "text-foreground after:absolute after:inset-x-3 after:bottom-0.5 after:h-px after:rounded-full after:bg-primary"
                 )}
               >
                 {link.label}
@@ -114,7 +114,12 @@ export function SectionNavbar() {
               />
             </Show>
             <Show when="signed-out">
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden sm:inline-flex"
+                asChild
+              >
                 <Link href="/sign-in">Sign in</Link>
               </Button>
               <Button size="sm" className="hidden sm:inline-flex" asChild>
@@ -122,7 +127,12 @@ export function SectionNavbar() {
               </Button>
             </Show>
 
-            <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="hidden sm:inline-flex"
+              asChild
+            >
               <a
                 href="https://github.com/Sanjaya-Danushka/Neoarch"
                 target="_blank"
@@ -133,12 +143,7 @@ export function SectionNavbar() {
                 <ArrowUpRight className="size-3.5 opacity-50" />
               </a>
             </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="sm:hidden"
-              asChild
-            >
+            <Button variant="outline" size="icon" className="sm:hidden" asChild>
               <a
                 href="https://github.com/Sanjaya-Danushka/Neoarch"
                 target="_blank"
@@ -172,7 +177,7 @@ export function SectionNavbar() {
                 onClick={() => setOpen(false)}
                 className={cn(
                   "flex items-center justify-between border-b border-border py-3 text-sm text-muted-foreground last:border-0 hover:text-foreground",
-                  activeSection === link.href.slice(1) && "text-foreground",
+                  activeSection === link.href.slice(1) && "text-foreground"
                 )}
               >
                 {link.label}
