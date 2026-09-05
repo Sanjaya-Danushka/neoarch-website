@@ -20,7 +20,7 @@ export function SectionHero() {
           Flatpak, and npm — with bundles, scheduled updates, backups, and
           system maintenance, all in one fast, beautiful dark GUI.
         </p>
-        <div className="mt-8 flex items-center justify-center gap-3">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Button size="lg" asChild>
             <a href="#download">
               Download for Arch

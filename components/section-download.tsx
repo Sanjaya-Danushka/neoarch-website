@@ -131,12 +131,12 @@ export function SectionDownload() {
           </div>
         </Reveal>
 
-        <div className="mx-auto grid max-w-4xl gap-4 md:grid-cols-2">
+        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
           {installCommands.map((item, i) => (
             <Reveal key={item.label} delay={i * 60}>
               <div
                 className={cn(
-                  "relative rounded-lg border bg-card p-6",
+                  "relative min-w-0 rounded-lg border bg-card p-6",
                   item.recommended ? "border-primary/50" : "border-border",
                 )}
               >
@@ -225,7 +225,7 @@ export function SectionDownload() {
             </div>
 
             <div
-              className="group relative"
+              className="group relative overflow-x-clip"
               onMouseEnter={() => setPaused(true)}
               onMouseLeave={() => setPaused(false)}
             >

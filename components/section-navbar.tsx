@@ -71,7 +71,7 @@ export function SectionNavbar() {
             : "border-b border-transparent bg-transparent"
         )}
       >
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <a href="#" className="group flex items-center gap-2.5">
             <span className="relative grid size-8 place-items-center">
               <Image
@@ -87,13 +87,13 @@ export function SectionNavbar() {
             </span>
           </a>
 
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-1 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:flex">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
+                  "relative rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-foreground",
                   activeSection === link.href.slice(1) &&
                     "text-foreground after:absolute after:inset-x-3 after:bottom-0.5 after:h-px after:rounded-full after:bg-primary"
                 )}
@@ -157,7 +157,7 @@ export function SectionNavbar() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="lg:hidden"
               onClick={() => setOpen(!open)}
               aria-label="Menu"
             >
@@ -168,8 +168,8 @@ export function SectionNavbar() {
       </div>
 
       {open && (
-        <div className="border-b border-border bg-background md:hidden">
-          <nav className="mx-auto flex max-w-6xl flex-col px-6 py-3">
+        <div className="border-b border-border bg-background lg:hidden">
+          <nav className="mx-auto flex max-w-7xl flex-col px-6 py-3">
             {navLinks.map((link) => (
               <a
                 key={link.href}

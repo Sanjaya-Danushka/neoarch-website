@@ -50,7 +50,7 @@ export function SectionCommunity() {
           </div>
         </Reveal>
 
-        <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2">
+        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2">
           {communityLinks.map((link, i) => {
             const Icon = link.icon
             return (
