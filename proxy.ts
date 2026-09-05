@@ -8,6 +8,8 @@ const isPublicRoute = createRouteMatcher([
   "/api/reviews",
   "/api/reviews/(.*)",
   "/api/release",
+  "/robots.txt",
+  "/sitemap.xml",
 ])
 
 export default clerkMiddleware(async (auth, req) => {
