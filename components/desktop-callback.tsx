@@ -48,23 +48,19 @@ export function DesktopCallback() {
     }
 
     ;(async () => {
+      let jwt: string | null = null
       try {
-        // Prefer a long-lived token minted server-side so the desktop app
-        // stays signed in across restarts. The normal session token (60s TTL)
-        // is only a fallback.
-        const res = await fetch("/api/desktop-token", { method: "POST" })
-        if (res.ok) {
-          const data = (await res.json()) as { token?: string }
-          if (data.token) {
-            await finish(data.token)
-            return
-          }
-        }
+        // Prefer the long-lived JWT template ("desktop", 30-day TTL) so the
+        // desktop app stays signed in across restarts. The normal session
+        // token (60s TTL) is only a fallback.
+        jwt = await session.getToken({ template: "desktop" })
       } catch {
-        // fall through to the short-lived token below
+        jwt = null
       }
-      const token = await session.getToken()
-      await finish(token ?? "")
+      if (!jwt) {
+        jwt = await session.getToken()
+      }
+      await finish(jwt ?? "")
     })()
   }, [isLoaded, isSignedIn, session])
 
